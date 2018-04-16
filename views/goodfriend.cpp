@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QDebug>
 
-GoodFriend::GoodFriend(int number, PersonDefin person) :
+GoodFriend::GoodFriend(int number, UserInfo person) :
     number(number), person(person)
 {
 }
@@ -62,7 +62,7 @@ GoodFriend::~GoodFriend()
 {
 }
 
-FriendGroup::FriendGroup(QVector<PersonDefin> persons) : persons(persons)
+FriendGroup::FriendGroup(QVector<UserInfo> persons) : persons(persons)
 {
     currpage = 0;
     pagenum = 0;
@@ -123,7 +123,7 @@ void FriendGroup::removeshowfriend()
     items.clear();
 }
 
-void FriendGroup::updateFriend(QVector<PersonDefin> _persons)
+void FriendGroup::updateFriend(QVector<UserInfo> _persons)
 {
     persons = _persons;
     pagenum = persons.size()/10;

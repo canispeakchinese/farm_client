@@ -6,6 +6,7 @@
 #include <QTimer>
 #include "dal/baseview/tool.h"
 #include "goodgroup.h"
+#include "mainview.h"
 
 class ButtonItem;
 
@@ -18,35 +19,38 @@ public:
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
+
+    void plantSuccess(int _kind, QDataStream &in);
+    void spadSuccess();
+    void harvestSuccess();
+    void statusChangeSuccess(int changeStatus, bool _auto, QDataStream &in);
+    void reclaSuccess();
+    void fertilizeSuccess(int reduTime);
+
     ~Soil();
 
 signals:
-    void sendStatusChangeRequest(int _status, int _number, bool _auto = true);
+    void sendStatusChangeRequest(QByteArray);
     //_status 1：water;2:pyre;3：weed. _auto:是否时间到了自动消除
-    void sendPlantRequest(int number);
-    void sendSpadRequest(int number);
-    void sendHarvestRequest(int number);
-    void sendFertilizeRequest(int number);
+    void sendPlantRequest(QByteArray);
+    void sendSpadRequest(QByteArray);
+    void sendHarvestRequest(QByteArray);
+    void getFertilize(int num);
 
 public slots:
-    void receiveStatus(ToolType type);
     void update2();
     void matureChange();
     void waterChange();
     void pyreChange();
     void weedChange();
-    void plantSuccess(int _num, int _kind, QDataStream &in);
-    void spadSuccess(int _num);
-    void harvestSuccess(int _num);
-    void statusChangeSuccess(int _num, int changeStatus, bool _auto, QDataStream &in);
-    void reclaSuccess();
-    void fertilizeSuccess(int _num, int reduTime);
 
 protected:
     bool sceneEvent(QEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    QByteArray createStatusChangeRequest(int status, bool _auto=true);
+
     int num;                       //编号
     int level;                     //土地等级
     int kind;                      //种植的是什么
@@ -62,7 +66,6 @@ private:
     bool isRecla;                  //是否被开垦了
     bool isMature;                 //是否已成熟
     bool need[10];                 //当前状态需要什么,比如除虫,种植
-    ToolType status;               //当前手上有什么工具,比如杀虫剂,种子
     QTimer *timer;                 //重绘定时器
 };
 
@@ -70,7 +73,7 @@ class SoilGroup : public QObject , public QGraphicsItemGroup
 {
     Q_OBJECT
 public:
-    explicit SoilGroup();
+    explicit SoilGroup(MainView* parent = 0);
     void createSoil();
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -78,18 +81,37 @@ public:
     ~SoilGroup();
 
 signals:
-    void sendSoil(Soil * soil);
-    void sendReclaRequest(int number);
+    void sendSoilRequestToServer(QByteArray);
+
+    void goodChange(QString source);
+    void statusChange(QString source);
+    void expChange(QString source);
+    void moneyChange(QString source);
 
 protected slots:
     void getSoils(QDataStream &in);
     void tryRecla();
     void reclaSuccess();
+    void getPlantResult(QDataStream& in);
+    void getSpadResult(QDataStream& in);
+    void getHarvestResult(QDataStream &in);
+    void getStatusChangeResult(QDataStream &in);
+    void getReclaResult(QDataStream &in);
+    void getFertilizeResult(QDataStream &in);
+
+    void getRequestFromSoil(QByteArray outBlock) {
+        emit sendSoilRequestToServer(outBlock);
+    }
+
+    void fertilizeEvent(int num);
 
 private:
+    MainView* parent;
+
     int reclaNum;
     ButtonItem *reclaButton;
     Soil *soil[18];
+    QString source;
 };
 
 #endif // SOIL_H

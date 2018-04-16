@@ -1,6 +1,8 @@
 #ifndef SHOWSCENEGROUP_H
 #define SHOWSCENEGROUP_H
 
+#include "mainview.h"
+
 #include <QGraphicsItemGroup>
 #include <QObject>
 
@@ -18,10 +20,8 @@ public:
     QPainterPath shape() const;
     ~ShowSceneGroup();
 
-signals:
-    //void senddecorate(Decorate * decorate);
-    void sendStore(Store * store);
-    void sendShop(Shop * shop);
+public slots:
+    void getGoods(QDataStream&, Business);
 
 private:
     Store * store;

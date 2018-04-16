@@ -9,8 +9,7 @@ using namespace std;
 
 class QTcpSocket;
 
-class GoodItem :public QGraphicsObject
-{
+class GoodItem :public QGraphicsObject {
     Q_OBJECT
 public:
     explicit GoodItem(Business business, Good good, bool levelEnough);
@@ -32,8 +31,7 @@ private:
     bool levelEnough;
 };
 
-class GoodGroup : public QObject , public QGraphicsItemGroup
-{
+class GoodGroup : public QObject , public QGraphicsItemGroup {
     Q_OBJECT
 public:
     explicit GoodGroup(Business business, set<Good> good,int len, int level);//len-每一行有多长,默认无限长
@@ -46,11 +44,11 @@ public:
     ~GoodGroup();
 
 signals:
-    void sendRequest(Good good, int businessNum);
+    void sendRequest(Good good);
 
 protected slots:
     void startBusiness(Good good);
-    void getInfor(Good good, int businessNum);
+    void getInfor(Good good);
 
 private:
     Business business;

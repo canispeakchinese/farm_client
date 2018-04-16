@@ -6,7 +6,7 @@
 #include <QDebug>
 
 Store::Store(int level, QWidget *parent) :
-    WareHouse(Sell, 4, level, parent)
+    WareHouse(StoreSource, Sell, 4, level, parent)
 {
     setMinimumSize(600, 500);
     setMaximumSize(600, 500);
@@ -32,6 +32,29 @@ void Store::goodChange(Business business, Good good)
     if(good.num)
         goods[good.type].insert(good);
     goodgroup[good.type]->updateGoodItem(goods[good.type]);
+}
+
+void Store::getBusinessResult(QDataStream &in) {
+    int messageType;
+    in >> messageType;
+    if(messageType == 0)
+        QMessageBox::warning(this, "交易失败", "交易数目不合法");
+    else if(messageType == 1)
+        QMessageBox::warning(this, "交易失败", "交易信息错误");
+    else if(messageType == 2)
+        QMessageBox::warning(this, "交易失败", "交易数目不合理");
+    else if(messageType == 3) {
+        if(business == Buy) {
+            emit moneyChange(-businessGood.buyPrice * businessGood.num);
+        } else if(business == Sell) {
+            if(businessGood.type == Seed || businessGood.type == Fertilize) {
+                emit moneyChange(businessGood.buyPrice * 0.8 * businessGood.num);
+            } else {
+                emit moneyChange(businessGood.sellPrice * businessGood.num);
+            }
+        }
+        emit goodChange(business, businessGood);
+    }
 }
 
 Store::~Store()

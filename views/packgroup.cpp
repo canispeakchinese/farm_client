@@ -7,7 +7,7 @@
 #include <QTabBar>
 
 PackGroup::PackGroup(int level, QWidget *parent) :
-    WareHouse(Use, -1, level, parent)
+    WareHouse(PackGroupSource, Use, -1, level, parent)
 {
     setMinimumSize(700, 120);
     setMaximumSize(700, 120);
@@ -21,23 +21,21 @@ PackGroup::PackGroup(int level, QWidget *parent) :
     tabwidget->setGeometry(10, 10, 680, 100);
 }
 
-void PackGroup::goodChange(Business business, Good good)
+void PackGroup::goodChange(Business business, Good *good)
 {
-    if(good.type == Fruit)
+    if(good->type == Fruit)
         return;
-    set<Good>::iterator it = goods[good.type].find(good);
-    if(it != goods[good.type].end())
+    set<Good>::iterator it = goods[good->type].find(*good);
+    if(it != goods[good->type].end())
     {
         if(business == Buy)
-            good.num += it->num;
-        goods[good.type].erase(it);
+            good->num += it->num;
+        goods[good->type].erase(it);
     }
-    if(good.num)
-        goods[good.type].insert(good);
-    goodgroup[good.type]->updateGoodItem(goods[good.type]);
+    if(good->num)
+        goods[good->type].insert(*good);
+    goodgroup[good->type]->updateGoodItem(goods[good->type]);
 }
 
-PackGroup::~PackGroup()
-{
-
+PackGroup::~PackGroup() {
 }

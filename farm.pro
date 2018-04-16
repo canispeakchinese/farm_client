@@ -14,10 +14,6 @@ TEMPLATE = app
 
 
 SOURCES += \
-    dal/baseview/basescene.cpp \
-    dal/baseview/buttonitem.cpp \
-    dal/baseview/tool.cpp \
-    dal/network/tcpclient.cpp \
     views/businessdialog.cpp \
     views/chatwidget.cpp \
     views/goodfriend.cpp \
@@ -32,13 +28,15 @@ SOURCES += \
     views/store.cpp \
     views/warehouse.cpp \
     main.cpp \
-    mainview.cpp
+    mainview.cpp \
+    dal/basestruct/userinfo.cpp \
+    dal/baseview/basescene.cpp \
+    dal/baseview/buttonitem.cpp \
+    dal/baseview/tool.cpp \
+    dal/network/tcpclient.cpp \
+    dal/basestruct/good.cpp
 
 HEADERS  += \
-    dal/baseview/basescene.h \
-    dal/baseview/buttonitem.h \
-    dal/baseview/tool.h \
-    dal/network/tcpclient.h \
     tools/const.h \
     views/businessdialog.h \
     views/chatwidget.h \
@@ -53,7 +51,13 @@ HEADERS  += \
     views/soil.h \
     views/store.h \
     views/warehouse.h \
-    mainview.h
+    mainview.h \
+    dal/basestruct/userinfo.h \
+    dal/baseview/basescene.h \
+    dal/baseview/buttonitem.h \
+    dal/baseview/tool.h \
+    dal/network/tcpclient.h \
+    dal/basestruct/good.h
 
 RESOURCES += \
     image.qrc

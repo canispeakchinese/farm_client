@@ -15,7 +15,7 @@ public:
     ~PackGroup();
 
 public slots:
-    void goodChange(Business business, Good good);
+    void goodChange(Business business, Good* good);
 };
 
 #endif // PACKGROUP_H

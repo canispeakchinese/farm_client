@@ -63,15 +63,15 @@ void Login::trySign()
         return;
     }
 
-    QString userName = inputName->text();
-    QString passWord = inputWord->text();
+    MainView::username = inputName->text();
+    MainView::password = inputWord->text();
 
     QByteArray outBlock;
     QDataStream out(&outBlock, QIODevice::ReadWrite);
     out.setVersion(QDataStream::Qt_5_5);
     out << (qint64)(0);
     out << SignIn;
-    out << userName << passWord;
+    out << MainView::username << MainView::password;
     out.device()->seek(0);
     out << (qint64)outBlock.size();
     emit sendLoginRequest(outBlock);
@@ -97,7 +97,7 @@ void Login::getLoginResult(QDataStream &in)
         }
     } else {
         emit logInSuccess(in);
-        login->close();
+        this->close();
     }
 }
 

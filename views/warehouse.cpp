@@ -5,8 +5,8 @@
 #include <QMessageBox>
 #include <QDebug>
 
-WareHouse::WareHouse(Business business, int column, int level, QWidget *parent) :
-    BaseScene(parent), business(business), column(column), level(level),
+WareHouse::WareHouse(QString source, Business business, int column, int level, QWidget *parent) :
+    BaseScene(parent), source(source), business(business), column(column), level(level),
     tabwidget(new QTabWidget(this))
 {
     goodgroup[0] = NULL;
@@ -23,7 +23,7 @@ void WareHouse::createScene(GoodType type)
     view->setScene(scene);
 
     goodgroup[type] = new GoodGroup(business, goods[type], column, level);
-    connect(goodgroup[type], SIGNAL(sendRequest(Good,int)), this, SLOT(sendRequest(Good,int)));
+    connect(goodgroup[type], SIGNAL(sendRequest(Good)), this, SLOT(getRequestFromGoodGroup(Good)));
     scene->addItem(goodgroup[type]);
     goodgroup[type]->setPos(25, 25);
     goodgroup[type]->createGoodItem();
@@ -61,14 +61,11 @@ void WareHouse::getGoods(QDataStream &in, Business business)
     while(goodNum--)
     {
         in >> goodType >> kind;
-        if(business == Buy)
-        {
+        if(business == Buy) {
             Good good = createGood((GoodType)goodType, kind, 0);
             good.num = money/good.buyPrice;
             goods[goodType].insert(good);
-        }
-        else
-        {
+        } else {
             in >> num;
             goods[goodType].insert(createGood((GoodType)goodType, kind, num));
         }
@@ -77,6 +74,7 @@ void WareHouse::getGoods(QDataStream &in, Business business)
     if(business == Sell)
         createScene(Fruit);
     createScene(Fertilize);
+    MainView::updateMutex.unlock();
 }
 
 void WareHouse::levelChange(int _level)
@@ -89,13 +87,32 @@ void WareHouse::levelChange(int _level)
     }
 }
 
-void WareHouse::sendRequest(Good good, int businessNum)
-{
-    emit sendBusinessRequest(business, good, businessNum);
+void WareHouse::getRequestFromGoodGroup(Good good) {
+    businessGood = good;
+    qDebug() << "WareHouse Start Business, Set Status -> " << Empty << ", And Source is " << source;
+    MainView::setStatus(Empty);
+    emit statusChange(source);
+    if(business == Use) {
+        MainView::setGood(good);
+        emit goodChange(source);
+        if(businessGood.type == Seed) {
+            MainView::setStatus(Plant);
+        } else if(businessGood.type == Fertilize) {
+            MainView::setStatus(Ferti);
+        }
+        qDebug() << "WareHouse Start Use Good, Set Good -> " << good.toString() << ", Set Status -> " << MainView::getStatus() << ", And Source is " << source;
+        emit statusChange(source);
+        this->hide();
+    } else {
+        QByteArray outBlock;
+        QDataStream out(&outBlock, QIODevice::ReadWrite);
+        out << qint64(0) << 5 << (int)business << (int)good.type << (int)good.kind << good.num;
+        out.device()->seek(0);
+        out << (qint64)outBlock.size();
+        emit sendBusinessRequest(outBlock);
+    }
 }
 
-WareHouse::~WareHouse()
-{
-
+WareHouse::~WareHouse() {
 }
 

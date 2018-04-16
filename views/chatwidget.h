@@ -1,6 +1,7 @@
 #ifndef CHATWIDGET_H
 #define CHATWIDGET_H
 
+#include "mainview.h"
 #include "dal/baseview/basescene.h"
 #include <QStringList>
 #include <QGraphicsTextItem>
@@ -48,6 +49,7 @@ private:
     QByteArray inBlock;
     qint64 totalBytes;
     int messageType;
+    int retryNum;
 };
 
 #endif // CHATWIDGET_H

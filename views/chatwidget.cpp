@@ -12,6 +12,7 @@ ChatWidget::ChatWidget(QString username, QString password) : tcpSocket(new QTcpS
     username(username), password(password), showMess(new QTextEdit(this)), inputMess(new QLineEdit(this)),
     sendMess(new QPushButton("发送", this)), closeButton(new QPushButton("关闭", this))
 {
+    tcpSocket->waitForConnected(1000);
     showMess->setGeometry(40, 50, 620, 450);
     inputMess->setGeometry(140, 510, 420, 30);
     sendMess->setGeometry(570, 510, 90, 30);
@@ -30,6 +31,7 @@ ChatWidget::ChatWidget(QString username, QString password) : tcpSocket(new QTcpS
 
     inBlock.clear();
     totalBytes = 0;
+    retryNum = 3;
 }
 
 void ChatWidget::tryLogin()
@@ -66,15 +68,26 @@ void ChatWidget::sendMessage()
 
 void ChatWidget::connected()
 {
+    qDebug() << "Chat Client Connect Success, And Set Connect Retry Num to 3";
+    MainView::tcpMutex.lock();
+    retryNum = 3;
+    MainView::tcpMutex.unlock();
     tryLogin();
 }
 
 void ChatWidget::connectError()
 {
-    QMessageBox::warning(NULL, "连接网络失败", tcpSocket->errorString());
-    exit(0);
     tcpSocket->abort();
-    tcpSocket->connectToHost(QHostAddress("192.168.2.112"), 7777);
+    qDebug() << "Chat Client Connect Error: " << tcpSocket->errorString() << ", can retry num: " << retryNum;
+    if(retryNum > 0) {
+        MainView::tcpMutex.lock();
+        retryNum--;
+        MainView::tcpMutex.unlock();
+        QMessageBox::warning(this, "连接网络失败", tcpSocket->errorString());
+        tcpSocket->connectToHost(QHostAddress("192.168.199.183"), 7777);
+    } else {
+        exit(-1);
+    }
 }
 
 void ChatWidget::readyRead()
@@ -121,23 +134,21 @@ void ChatWidget::newMessageComing(QDataStream &in)
     showMess->setPlainText(publicMess);
 }
 
-void ChatWidget::loginResultComing(QDataStream &in)
-{
+void ChatWidget::loginResultComing(QDataStream &in) {
     bool result;
     in >> result;
-    if(!result)
-    {
+    if(!result) {
         QMessageBox::warning(NULL, "登录失败", "连接聊天服务器失败");
         exit(0);
     }
     int count;
     in >> count;
-    while(count--)
+    while(count--) {
         newMessageComing(in);
+    }
 }
 
-void ChatWidget::newChatComing(QDataStream &in)
-{
+void ChatWidget::newChatComing(QDataStream &in) {
     QString newMessage, username;
     QDateTime time;
     in >> newMessage >> username >> time;

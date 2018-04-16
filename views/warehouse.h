@@ -1,9 +1,10 @@
 #ifndef WAREHOUSE_H
 #define WAREHOUSE_H
 
-
+#include "mainview.h"
 #include "dal/baseview/basescene.h"
 #include "views/goodgroup.h"
+#include "dal/baseview/tool.h"
 #include <set>
 
 using namespace std;
@@ -14,20 +15,25 @@ class WareHouse : public BaseScene
 {
     Q_OBJECT
 public:
-    explicit WareHouse(Business business, int column, int level, QWidget *parent = 0);
+    explicit WareHouse(QString source, Business business, int column, int level, QWidget *parent = 0);
     void createScene(GoodType type);
     void business_failed();
     ~WareHouse();
 
 signals:
-    void sendBusinessRequest(Business buesiness, Good good, int businessNum);
+    void sendBusinessRequest(QByteArray);
+    void moneyChange(int money);
+    void statusChange(QString source);
+    void goodChange(QString source);
 
 public slots:
     void getGoods(QDataStream &in, Business business);
-    void sendRequest(Good good, int businessNum);
+    void getRequestFromGoodGroup(Good good);
     void levelChange(int _level);
 
 protected:
+    QString source;
+    Good businessGood;
     Business business;
     int column;   //展示物品的时候有多少列
     int level;

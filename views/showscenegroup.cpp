@@ -19,14 +19,12 @@ void ShowSceneGroup::createButton()
     store = new Store(level);
     buttonitem = new ButtonItem(-30, -30, 60, 60, QPixmap(":scene/image/scene/store.png"));
     connect(buttonitem,SIGNAL(clicked()),store,SLOT(show()));
-    emit sendStore(store);
     buttonitem->setPos(-100, -30);
     addToGroup(buttonitem);
 
     shop = new Shop(level);
     buttonitem = new ButtonItem(-30, -30, 60, 60, QPixmap(":scene/image/scene/shop.png"));
     connect(buttonitem,SIGNAL(clicked()),shop,SLOT(show()));
-    emit sendShop(shop);
     buttonitem->setPos(-170, -30);
     addToGroup(buttonitem);
 }
@@ -48,6 +46,11 @@ QPainterPath ShowSceneGroup::shape() const//这个函数返回值确定的是这
     QPainterPath path;
     path.addRect(-170, -30, 170, 30);
     return path;
+}
+
+void ShowSceneGroup::getGoods(QDataStream &in, Business business) {
+    this->store->getGoods(in, business);
+    this->shop->getGoods(in, business);
 }
 
 ShowSceneGroup::~ShowSceneGroup()

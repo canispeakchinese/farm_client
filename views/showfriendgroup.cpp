@@ -161,9 +161,10 @@ void ShowFriendGroup::getFriend(QDataStream &in)
     while(friendsNum--)
     {
         in >> username >> faceaddress >> level >> exp >> money;
-        persons << PersonDefin(username, QString(":face/image/face/%1-1.GIF").arg(faceaddress), level, exp, money);
+        persons << UserInfo(username, QString(":face/image/face/%1-1.GIF").arg(faceaddress), level, exp, money);
     }
     friendGroup->updateFriend(persons);
+    MainView::updateMutex.unlock();
 }
 
 ShowFriendGroup::~ShowFriendGroup()

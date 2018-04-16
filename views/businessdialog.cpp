@@ -6,23 +6,6 @@
 #include <QRegExp>
 #include <QValidator>
 
-Good createGood(GoodType type, int kind, int num)
-{
-    if(type == Fruit)
-    {
-        Good aim(goodDefin[Seed][kind]);
-        aim.type = Fruit;
-        aim.num = num;
-        return aim;
-    }
-    else
-    {
-        Good aim(goodDefin[type][kind]);
-        aim.num = num;
-        return aim;
-    }
-}
-
 BusinessDialog::BusinessDialog(Business business, Good good, QWidget *parent) :
     QDialog(parent), business(business), good(good)
 {
@@ -39,16 +22,13 @@ BusinessDialog::BusinessDialog(Business business, Good good, QWidget *parent) :
     business_num->setGeometry(240, 150, 70, 20);
 
     confirm = new QPushButton(this);
-    if(business == Sell)
-    {
+    if(business == Sell) {
         confirm->setText("卖出");
         if(good.type == Fruit)
             price = good.sellPrice;
         else if(good.type == Seed || good.type == Fertilize)
             price = good.buyPrice*0.8;
-    }
-    else
-    {
+    } else {
         confirm->setText("买入");
         if(good.type == Seed || good.type == Fertilize)
             price = good.buyPrice;
@@ -97,6 +77,5 @@ void BusinessDialog::paintEvent(QPaintEvent *event)
     QDialog::paintEvent(event);
 }
 
-BusinessDialog::~BusinessDialog()
-{
+BusinessDialog::~BusinessDialog() {
 }

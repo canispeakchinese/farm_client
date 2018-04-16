@@ -3,9 +3,10 @@
 
 #include <QGraphicsObject>
 #include <QObject>
+#include "mainview.h"
 
 class FriendGroup;
-class PersonDefin;
+class UserInfo;
 class ButtonItem;
 
 class ShowFriend : public QGraphicsObject
@@ -50,8 +51,8 @@ public slots:
 private:
     FriendGroup * friendGroup;
     FriendGroup * searchGroup;
-    QVector<PersonDefin> persons;
-    QVector<PersonDefin> searchs;
+    QVector<UserInfo> persons;
+    QVector<UserInfo> searchs;
 
     ButtonItem * showFriend;
     ButtonItem * showSearch;

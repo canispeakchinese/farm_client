@@ -9,7 +9,7 @@ class ButtonItem;
 class GoodFriend : public QGraphicsObject
 {
 public:
-    explicit GoodFriend(int number, PersonDefin person);
+    explicit GoodFriend(int number, UserInfo person);
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
@@ -21,28 +21,28 @@ protected:
 
 private:
     int number;
-    PersonDefin person;
+    UserInfo person;
 };
 
 class FriendGroup : public QObject , public QGraphicsItemGroup
 {
     Q_OBJECT
 public:
-    explicit FriendGroup(QVector<PersonDefin> persons);
+    explicit FriendGroup(QVector<UserInfo> persons);
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
     ~FriendGroup();
     void addshowfriend();
     void removeshowfriend();
-    void updateFriend(QVector<PersonDefin> _persons);
+    void updateFriend(QVector<UserInfo> _persons);
 
 public slots:
     void next();
     void front();
 
 private:
-    QVector<PersonDefin> persons;
+    QVector<UserInfo> persons;
     QList<GoodFriend *> items;
     ButtonItem * left;
     ButtonItem * right;

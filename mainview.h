@@ -16,33 +16,112 @@
  */
 
 #include <QGraphicsView>
-#include <queue>
-#include "views/warehouse.h"
-#include "dal/baseview/tool.h"
+#include <QMutex>
+
+#include "dal/basestruct/userinfo.h"
+#include "dal/basestruct/good.h"
+
+enum Business {
+    Buy, Sell, Use//买,卖,使用
+};
+const QString SoilGroupSource = "SoilGroup";
+const QString ToolGroupSource = "ToolGroup";
+const QString MainViewSource = "MainView";
+const QString PackGroupSource = "PackGroup";
+const QString ShopSource = "Shop";
+const QString StoreSource = "Store";
+
+enum ToolType {Spad, Pack, Water, Pyre, Weed, Harv, Alhar, Chat, Plant, Ferti, Empty};
 
 class QGraphicsScene;
 class SoilGroup;
 class ShowFriendGroup;
 class ShowInforGroup;
-class Soil;
-class PersonDefin;
+class UserInfo;
 class ShowSceneGroup;
-class Store;
-class Shop;
 class PackGroup;
 class Good;
-class QTcpSocket;
 class Login;
-class QTimer;
 class ChatWidget;
 class TcpClient;
+class ToolGroup;
 
 class MainView : public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    MainView(QGraphicsView * parent = 0);
+    MainView(QGraphicsView* parent = 0);
+
+    static ToolType getStatus() {
+        statusMutex.lock();
+        ToolType type = toolType;
+        statusMutex.unlock();
+        return type;
+    }
+    static void setStatus(ToolType type) {
+        statusMutex.lock();
+        toolType = type;
+        statusMutex.unlock();
+    }
+
+    static UserInfo getUserInfo() {
+        userInfoMutex.lock();
+        UserInfo userInfo = person;
+        userInfoMutex.unlock();
+        return userInfo;
+    }
+    static void setUserInfo(UserInfo userInfo) {
+        userInfoMutex.lock();
+        person = userInfo;
+        userInfoMutex.unlock();
+    }
+
+    static Good getGood() {
+        goodMutex.lock();
+        Good item = good;
+        goodMutex.unlock();
+        return item;
+    }
+    static void setGood(Good item) {
+        goodMutex.lock();
+        good = item;
+        goodMutex.unlock();
+    }
+    ~MainView();
+
+protected:
+    void mouseMoveEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
+
+signals:
+    void statusChange(QString source);
+    void sendStatusChange();
+
+    void moneyChange(QString source);
+    void sendMoneyChange();
+
+    void expChange(QString source);
+    void sendExpChange();
+
+    void goodChange(QString source);
+    void sendGoodChange();
+
+    void sendUpdateRequest(QByteArray);
+    void getSoils(QDataStream& in);
+    void getFriend(QDataStream& in);
+    void getGoods(QDataStream& in, Business business);
+
+public slots:
+    void statusChangeCenter(QString source);
+    void moneyChangeCenter(QString source);
+    void expChangeCenter(QString source);
+    void goodChangeCenter(QString source);
+
+    void logInSuccess(QDataStream& in);
+    void getUpdateResult(QDataStream &in);
+
+private:
     void initMainView();
     void createSoilGroup();
     void createToolGroup();
@@ -51,85 +130,40 @@ public:
     void createSceneGroup();
     void createPackGroup();
     void createChatWidget();
-    void getUpdateResult(QDataStream &in);
-    void getBusinessResult(QDataStream &in);
-    void getPlantResult(QDataStream &in);
-    void getSpadResult(QDataStream &in);
-    void getHarvestResult(QDataStream &in);
-    void getStatusChangeResult(QDataStream &in);
-    void getReclaResult(QDataStream &in);
-    void getFertilizeResult(QDataStream &in);
-    ~MainView();
 
-protected:
-    void mouseMoveEvent(QMouseEvent * event);
-    void mousePressEvent(QMouseEvent * event);
+    QByteArray createUpdateRequest(int request);
+    void statusChangeSignalConnect();
+    void moneyChangeSignalConnect();
+    void expChangeSignalConnect();
+    void goodChangeSignalConnect();
 
-signals:
-    void sendStatus(ToolType type);
-    void moneyChange(int money);
-    void levelChange(int level);
-    void goodChange(Business business, Good good);
-    void getFriend(QDataStream &in);
-    void getSoils(QDataStream &in);
-    void getGoods(QDataStream &in, Business business);
-    void plantSuccess(int number, int kind, QDataStream &in);
-    void spadSuccess(int number);
-    void harvestSuccess(int number);
-    void statusChangeSuccess(int number, int _status, bool _auto, QDataStream &in);
-    void reclaSuccess();
-    void fertilizeSuccess(int number, int reduTime);
+    void networkMessageConnectSignalConnect();
 
-public slots:
-    void connectSoil(Soil * soil);
-    void connectTool(Tool * tool);
-    void connectStore(Store * store);
-    void connectShop(Shop * shop);
-    void receiveStatus(ToolType newtype);
-    void connectError();
-    void readyRead();
-    void sendUpdateRequest(int updateRequest);
-    void sendBusinessRequest(Business _business, Good _good, int _businessNum);
-    void sendPlantRequest(int _number);
-    void sendSpadRequest(int _number);
-    void sendHarvestRequest(int _number);
-    void sendStatusChangeRequest(int _status, int _number, bool _auto);//土地状态更新
-    void sendReclaRequest(int number);
-    void sendFertilizeRequest(int number);
-    void logInSuccess(QDataStream& in);
+    TcpClient* tcpClient;
+    Login* login;
 
-private:
-    TcpClient* tcpClient2;
-    QTcpSocket * tcpClient;
-    Login * login;
-    int id;                     //玩家编号
-    QString username;
-    QString password;           //对应密码
+    QGraphicsScene* scene;
+    QGraphicsPixmapItem* showstatus;      //显示当前状态
+    SoilGroup* soilgroup;                 //土地
+    ToolGroup* toolgroup;                 //工具
+    ShowFriendGroup* showfriendgroup;     //好友
+    ShowInforGroup* showinforgroup;       //个人信息
+    ShowSceneGroup* showscenegroup;       //商店等窗口
+    PackGroup* packgroup;                 //背包
+    ChatWidget* chatWidget;               //聊天界面
+    QString source;
 
-    PersonDefin * person;
-
-    QGraphicsScene * scene;
-
-    QGraphicsPixmapItem * showstatus;      //显示当前状态
-    SoilGroup * soilgroup;                 //土地
-    ToolGroup * toolgroup;                 //工具
-    ShowFriendGroup * showfriendgroup;     //好友
-    ShowInforGroup * showinforgroup;       //个人信息
-    ShowSceneGroup * showscenegroup;       //商店等窗口
-    PackGroup * packgroup;                 //背包
-    ChatWidget * chatWidget;               //聊天界面
-
-    ToolType toolType;
-    qint64 totalBytes;
-    QByteArray inBlock;
-    int messageType;                         //消息的类型
-    //int updateRequest;                     //更新的范围
-    //int number;                            //当前操作的土地
-    //bool isAuto;                           //当前操作是否是自动执行的
-
-    Business business;
-    Good good;
-    int businessNum;
+public:
+    static QString username;
+    static QString password;
+    static ToolType toolType;
+    static UserInfo person;
+    static Good good;
+    static QMutex updateMutex;
+    static QMutex statusMutex;
+    static QMutex tcpMutex;
+    static QMutex userInfoMutex;
+    static QMutex goodMutex;
 };
 
 #endif // MAINWINDOW_H

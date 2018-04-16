@@ -1,7 +1,8 @@
 #ifndef STORE_H
 #define STORE_H
 
-#include "warehouse.h"
+#include "mainview.h"
+#include "views/warehouse.h"
 
 class Store : public WareHouse
 {
@@ -12,6 +13,7 @@ public:
 
 public slots:
     void goodChange(Business business, Good good);
+    void getBusinessResult(QDataStream& in);
 };
 
 #endif // STORE_H

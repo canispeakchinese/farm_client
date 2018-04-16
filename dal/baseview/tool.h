@@ -1,8 +1,8 @@
 #ifndef TOOL_H
 #define TOOL_H
 
+#include "mainview.h"
 #include <QGraphicsObject>
-enum ToolType {Spad, Pack, Water, Pyre, Weed, Harv, Alhar, Chat, Plant, Ferti, Empty};
 
 class Tool:public QGraphicsObject {
     Q_OBJECT
@@ -13,12 +13,12 @@ public:
     QPainterPath shape() const;
     ~Tool();
 
+signals:
+    void statusChange(ToolType*);
+
 protected:
     bool sceneEvent(QEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
-signals:
-    void sendStatus(ToolType);
 
 private:
     ToolType type;
@@ -36,7 +36,14 @@ public:
     ~ToolGroup();
 
 signals:
-    void sendTool(Tool * tool);
+    void statusChange(QString source);
+
+public slots:
+    void getStatusChange(ToolType*);
+    void receiveStatusChange();
+
+private:
+    QString source;
 };
 
 #endif // TOOL_H

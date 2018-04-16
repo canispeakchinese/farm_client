@@ -6,7 +6,7 @@
 #include <QDebug>
 
 Shop::Shop(int level, QWidget *parent) :
-    WareHouse(Buy, 4, level, parent)
+    WareHouse(ShopSource, Buy, 4, level, parent)
 {
     setMinimumSize(600, 500);
     setMaximumSize(600, 500);

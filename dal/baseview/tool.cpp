@@ -37,7 +37,7 @@ bool Tool::sceneEvent(QEvent *event) {
 
 void Tool::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit sendStatus(type);
+    emit statusChange(&type);
     QGraphicsObject::mousePressEvent(event);
 }
 
@@ -45,14 +45,15 @@ Tool::~Tool() {
 }
 
 ToolGroup::ToolGroup() {
+    source = ToolGroupSource;
 }
 
 void ToolGroup::createTool() {
     for(int i=0; i<8; i++) {
         Tool *tool = new Tool((ToolType) i, QString(":icon/image/icon/topbutton(")+QString::number(i)+QString(").png"));
         addToGroup(tool);
-        emit sendTool(tool);
         tool->setPos(QPoint(30+i*70, 10));
+        connect(tool, SIGNAL(statusChange(ToolType*)), this, SLOT(getStatusChange(ToolType*)));
     }
 }
 
@@ -70,6 +71,16 @@ QPainterPath ToolGroup::shape() const {
     QPainterPath path;
     path.addRect(0, 0, 610, 80);
     return path;
+}
+
+void ToolGroup::getStatusChange(ToolType* toolType) {
+    qDebug() << "ToolGroup Click Tool, Status Change: " << MainView::getStatus() << " -> " << *toolType;
+    MainView::setStatus(*toolType);
+    emit statusChange(source);
+}
+
+void ToolGroup::receiveStatusChange() {
+
 }
 
 ToolGroup::~ToolGroup(){

@@ -3,25 +3,12 @@
 
 #include <QGraphicsItemGroup>
 
-class PersonDefin
-{
-public:
-    PersonDefin(){}
-    PersonDefin(QString username, QString faceaddress, int level, int exp, int money);
-    PersonDefin(const PersonDefin &person);
-    ~PersonDefin();
-
-    QString username;
-    QString faceaddress;
-    int level;
-    int exp;
-    int money;
-};
+#include "mainview.h"
 
 class ShowInforGroup : public QGraphicsItemGroup
 {
 public:
-    explicit ShowInforGroup(PersonDefin *person);
+    explicit ShowInforGroup(UserInfo person);
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
@@ -32,7 +19,7 @@ public:
     ~ShowInforGroup();
 
 private:
-    PersonDefin *person;
+    UserInfo person;
 };
 
 #endif // SHOWINFORGROUP_H
