@@ -3,6 +3,10 @@
 
 #include <QString>
 
+const int levelLimit = 11;
+const int expLimit = 9999;
+const int needExp[11] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+
 class UserInfo
 {
 public:

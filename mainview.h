@@ -20,18 +20,8 @@
 
 #include "dal/basestruct/userinfo.h"
 #include "dal/basestruct/good.h"
-
-enum Business {
-    Buy, Sell, Use//买,卖,使用
-};
-const QString SoilGroupSource = "SoilGroup";
-const QString ToolGroupSource = "ToolGroup";
-const QString MainViewSource = "MainView";
-const QString PackGroupSource = "PackGroup";
-const QString ShopSource = "Shop";
-const QString StoreSource = "Store";
-
-enum ToolType {Spad, Pack, Water, Pyre, Weed, Harv, Alhar, Chat, Plant, Ferti, Empty};
+#include "dal/tools/const.h"
+#include "dal/tools/utils.h"
 
 class QGraphicsScene;
 class SoilGroup;
@@ -52,6 +42,7 @@ class MainView : public QGraphicsView
 
 public:
     MainView(QGraphicsView* parent = 0);
+    void start();
 
     static ToolType getStatus() {
         statusMutex.lock();

@@ -12,6 +12,7 @@ class TcpClient:public QTcpSocket {
 
 public:
     TcpClient(MainView *parent);
+    void start();
 
 signals:
     void getLoginResult(QDataStream&);

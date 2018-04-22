@@ -8,13 +8,20 @@
 TcpClient::TcpClient(MainView* parent): QTcpSocket(new QTcpSocket()), parent(parent) {
     totalBytes = 0;
     inBlock.resize(0);
-    waitForConnected(1000);
-    // 连接失败直接报错
-    connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(connectError()));
-    connectToHost(QHostAddress("192.168.199.183"), 6666);
 
+    connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(connectError()));
     connect(this, SIGNAL(connected()), this, SLOT(connectSuccess()));
     connect(this, SIGNAL(readyRead()), this, SLOT(readyRead()));
+}
+
+void TcpClient::start() {
+    // 连接失败直接报错
+    qDebug() << "Start connect to server";
+
+    connectToHost(QHostAddress(ipAddress), 6666);
+    if(waitForConnected(1000) == false) {
+        connectError();
+    }
 }
 
 void TcpClient::connectError() {
@@ -25,6 +32,9 @@ void TcpClient::connectError() {
         MainView::tcpMutex.unlock();
         QMessageBox::warning(parent, "连接网络失败", errorString());
         connectToHost(QHostAddress("192.168.199.183"), 6666);
+        if(waitForConnected(1000) == false) {
+            connectError();
+        }
     } else {
         exit(-1);
     }

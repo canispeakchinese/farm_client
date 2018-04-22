@@ -20,12 +20,18 @@ public:
     QPainterPath shape() const;
     ~ShowSceneGroup();
 
+signals:
+    void sendWarehouseRequestToServer(QByteArray outBlock);
+
 public slots:
     void getGoods(QDataStream&, Business);
+    void getRequestFromWarehouse(QByteArray outBlock) {
+        emit sendWarehouseRequestToServer(outBlock);
+    }
 
 private:
-    Store * store;
-    Shop * shop;
+    Store* store;
+    Shop* shop;
     int level;
 };
 

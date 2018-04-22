@@ -5,18 +5,18 @@
 
 #include "mainview.h"
 
-class ShowInforGroup : public QGraphicsItemGroup
-{
+class ShowInforGroup : public QObject, public QGraphicsItemGroup {
+    Q_OBJECT
 public:
     explicit ShowInforGroup(UserInfo person);
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
 
-    void moneyChange(int _money);
-    bool expAdd(int _exp);
-
     ~ShowInforGroup();
+
+public slots:
+    void receiveUserInfoChange();
 
 private:
     UserInfo person;

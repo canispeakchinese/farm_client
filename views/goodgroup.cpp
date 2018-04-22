@@ -150,7 +150,7 @@ QPainterPath GoodGroup::shape() const {
 void GoodGroup::startBusiness(Good good) {
     if(business == Buy || business == Sell) {
         BusinessDialog * businessdialog = new BusinessDialog(business, good);
-        connect(businessdialog,SIGNAL(business_success(Good)),this,SLOT(getInfor(Good)));
+        connect(businessdialog, SIGNAL(business_success(Good)), this, SLOT(getInfor(Good)));
         businessdialog->exec();
     } else {
         getInfor(good);

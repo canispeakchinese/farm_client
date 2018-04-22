@@ -18,7 +18,6 @@ ChatWidget::ChatWidget(QString username, QString password) : tcpSocket(new QTcpS
     sendMess->setGeometry(570, 510, 90, 30);
     closeButton->setGeometry(620, 10, 50, 20);
 
-    tcpSocket->connectToHost(QHostAddress("192.168.2.112"), 7777);
     connect(tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(connectError()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -36,6 +35,10 @@ ChatWidget::ChatWidget(QString username, QString password) : tcpSocket(new QTcpS
 
 void ChatWidget::tryLogin()
 {
+    tcpSocket->connectToHost(QHostAddress(ipAddress), 7777);
+    if(tcpSocket->waitForConnected(1000) == false) {
+        connectError();
+    }
     QByteArray outBlock;
     QDataStream out(&outBlock, QIODevice::ReadWrite);
     out.setVersion(QDataStream::Qt_5_5);
@@ -85,6 +88,9 @@ void ChatWidget::connectError()
         MainView::tcpMutex.unlock();
         QMessageBox::warning(this, "连接网络失败", tcpSocket->errorString());
         tcpSocket->connectToHost(QHostAddress("192.168.199.183"), 7777);
+        if(tcpSocket->waitForConnected(1000) == false) {
+            connectError();
+        }
     } else {
         exit(-1);
     }

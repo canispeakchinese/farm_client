@@ -1,8 +1,6 @@
 #include "showinforgroup.h"
 #include <QPainter>
 
-const int needExp[11] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
-
 ShowInforGroup::ShowInforGroup(UserInfo person): person(person) {
 }
 
@@ -26,28 +24,11 @@ QPainterPath ShowInforGroup::shape() const {
     return path;
 }
 
-void ShowInforGroup::moneyChange(int _money) {
-    person.money = _money;
+void ShowInforGroup::receiveUserInfoChange() {
+    person = MainView::getUserInfo();
     update();
 }
 
-bool ShowInforGroup::expAdd(int _exp) {
-    person.exp += _exp;
-    if(person.exp >= needExp[person.level])
-    {
-        while(person.exp >= needExp[person.level])
-        {
-            person.exp -= needExp[person.level];
-            person.level++;
-        }
-        update();
-        return true;
-    }
-    update();
-    return false;
-}
-
-ShowInforGroup::~ShowInforGroup()
-{
+ShowInforGroup::~ShowInforGroup() {
 
 }

@@ -50,7 +50,8 @@ void BusinessDialog::checkNum()
 
 void BusinessDialog::send_infor()
 {
-    emit business_success(good, business_num->text().toInt());
+    good.num = business_num->text().toInt();
+    emit business_success(good);
     close();
 }
 

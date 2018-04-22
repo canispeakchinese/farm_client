@@ -23,7 +23,7 @@ protected:
     void paintEvent(QPaintEvent * event);
 
 signals:
-    void business_success(Good good, int num);
+    void business_success(Good good);
 
 public slots:
     void checkNum();

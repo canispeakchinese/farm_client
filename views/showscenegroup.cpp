@@ -4,8 +4,7 @@
 #include "shop.h"
 #include <QPainter>
 
-ShowSceneGroup::ShowSceneGroup(int level) : level(level)
-{
+ShowSceneGroup::ShowSceneGroup(int level) : level(level) {
 }
 
 void ShowSceneGroup::createButton()
@@ -27,6 +26,9 @@ void ShowSceneGroup::createButton()
     connect(buttonitem,SIGNAL(clicked()),shop,SLOT(show()));
     buttonitem->setPos(-170, -30);
     addToGroup(buttonitem);
+
+    connect(store, SIGNAL(sendBusinessRequest(QByteArray)), this, SLOT(getRequestFromWarehouse(QByteArray)));
+    connect(shop, SIGNAL(sendBusinessRequest(QByteArray)), this, SLOT(getRequestFromWarehouse(QByteArray)));
 }
 
 QRectF ShowSceneGroup::boundingRect() const//我猜是用来确定刷新区域的，但是不确定

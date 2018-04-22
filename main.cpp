@@ -4,9 +4,11 @@
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(myMessageOutput);
     QApplication a(argc, argv);
 
     MainView w;
+    w.start();
 
     return a.exec();
 }

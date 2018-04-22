@@ -34,10 +34,10 @@ SOURCES += \
     dal/baseview/buttonitem.cpp \
     dal/baseview/tool.cpp \
     dal/network/tcpclient.cpp \
-    dal/basestruct/good.cpp
+    dal/basestruct/good.cpp \
+    dal/tools/utils.cpp
 
 HEADERS  += \
-    tools/const.h \
     views/businessdialog.h \
     views/chatwidget.h \
     views/goodfriend.h \
@@ -52,12 +52,14 @@ HEADERS  += \
     views/store.h \
     views/warehouse.h \
     mainview.h \
+    dal/basestruct/good.h \
     dal/basestruct/userinfo.h \
     dal/baseview/basescene.h \
     dal/baseview/buttonitem.h \
     dal/baseview/tool.h \
     dal/network/tcpclient.h \
-    dal/basestruct/good.h
+    dal/tools/const.h \
+    dal/tools/utils.h
 
 RESOURCES += \
     image.qrc

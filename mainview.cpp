@@ -53,6 +53,10 @@ MainView::MainView(QGraphicsView *parent) : QGraphicsView(parent), tcpClient(new
     connect(tcpClient, SIGNAL(getUpdateResult(QDataStream&)), this, SLOT(getUpdateResult(QDataStream&)));
 }
 
+void MainView::start() {
+    tcpClient->start();
+}
+
 QByteArray MainView::createUpdateRequest(int request) {
     QByteArray outBlock;
     QDataStream out(&outBlock, QIODevice::ReadWrite);
@@ -129,7 +133,7 @@ void MainView::createFriendGroup() {
 }
 
 void MainView::createInforGroup() {
-    showinforgroup = new ShowInforGroup(getUserInfo());
+    showinforgroup = new ShowInforGroup(person);
     scene->addItem(showinforgroup);
     showinforgroup->setPos(135,80);
 }
@@ -213,14 +217,19 @@ void MainView::goodChangeSignalConnect() {
 
 void MainView::moneyChangeSignalConnect() {
     connect(soilgroup, SIGNAL(moneyChange(QString)), this, SLOT(moneyChangeCenter(QString)));
+
+    connect(this, SIGNAL(sendMoneyChange()), showinforgroup, SLOT(receiveUserInfoChange()));
 }
 
 void MainView::expChangeSignalConnect() {
     connect(soilgroup, SIGNAL(expChange(QString)), this, SLOT(expChangeCenter(QString)));
+
+    connect(this, SIGNAL(sendExpChange()), showinforgroup, SLOT(receiveUserInfoChange()));
 }
 
 void MainView::networkMessageConnectSignalConnect() {
     connect(soilgroup, SIGNAL(sendSoilRequestToServer(QByteArray)), tcpClient, SLOT(sendRequest(QByteArray)));
+    connect(showscenegroup, SIGNAL(sendWarehouseRequestToServer(outBlock)), tcpClient, SLOT(sendRequest(QByteArray)));
 
     connect(tcpClient, SIGNAL(getFertilizeResult(QDataStream&)), soilgroup, SLOT(getFertilizeResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getPlantResult(QDataStream&)), soilgroup, SLOT(getPlantResult(QDataStream&)));
@@ -255,6 +264,17 @@ void MainView::statusChangeCenter(QString source) {
 
 void MainView::expChangeCenter(QString source) {
     qDebug() << "Exp Changed, Source: " << source;
+    UserInfo person = getUserInfo();
+    if(person.exp >= needExp[person.level]) {
+        while(person.level < levelLimit && person.exp >= needExp[person.level]) {
+            person.exp -= needExp[person.level];
+            person.level++;
+        }
+        if(person.exp > expLimit) {
+            person.exp = expLimit;
+        }
+    }
+    setUserInfo(person);
     emit sendExpChange();
 }
 

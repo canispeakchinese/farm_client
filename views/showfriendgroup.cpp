@@ -167,9 +167,7 @@ void ShowFriendGroup::getFriend(QDataStream &in)
     MainView::updateMutex.unlock();
 }
 
-ShowFriendGroup::~ShowFriendGroup()
-{
-
+ShowFriendGroup::~ShowFriendGroup() {
 }
 
 
