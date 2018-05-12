@@ -13,6 +13,8 @@ class Shop : public WareHouse
     Q_OBJECT
 public:
     explicit Shop(int level, QWidget *parent = 0);
+    virtual void receiveGoodChange(GoodChange::GoodChangeSource source);
+    virtual int updateBusinessResult();
     ~Shop();
 
 public slots:

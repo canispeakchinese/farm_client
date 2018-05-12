@@ -18,20 +18,34 @@ public:
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
+    void setParent(QWidget* widget) {
+        parent = widget;
+    }
     ~ShowSceneGroup();
 
 signals:
     void sendWarehouseRequestToServer(QByteArray outBlock);
+    void goodChange(QString source, GoodChange::GoodChangeSource goodChangeSource);
+    void moneyChange(QString source);
 
 public slots:
     void getGoods(QDataStream&, Business);
-    void getRequestFromWarehouse(QByteArray outBlock) {
+    void getBusinessResult(QDataStream&);
+    void receiveGoodChange(GoodChange::GoodChangeSource source);
+    void receiveUserInfoChange();
+    void getRequestFromWarehouse(QByteArray outBlock, Business _business) {
+        business = _business;
         emit sendWarehouseRequestToServer(outBlock);
+    }
+    void getGoodChangeFromWarehouse(QString source, GoodChange::GoodChangeSource goodChangeSource) {
+        emit goodChange(source, goodChangeSource);
     }
 
 private:
+    QWidget* parent;
     Store* store;
     Shop* shop;
+    Business business;
     int level;
 };
 

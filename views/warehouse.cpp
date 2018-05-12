@@ -94,7 +94,7 @@ void WareHouse::getRequestFromGoodGroup(Good good) {
     emit statusChange(source);
     if(business == Use) {
         MainView::setGood(good);
-        emit goodChange(source);
+        emit goodChange(source, GoodChange::Update);
         if(businessGood.type == Seed) {
             MainView::setStatus(Plant);
         } else if(businessGood.type == Fertilize) {
@@ -109,7 +109,7 @@ void WareHouse::getRequestFromGoodGroup(Good good) {
         out << qint64(0) << 5 << (int)business << (int)good.type << (int)good.kind << good.num;
         out.device()->seek(0);
         out << (qint64)outBlock.size();
-        emit sendBusinessRequest(outBlock);
+        emit sendBusinessRequest(outBlock, business);
     }
 }
 

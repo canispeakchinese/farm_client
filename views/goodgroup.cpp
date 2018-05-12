@@ -27,6 +27,7 @@ void GoodItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         } else if(good.type == Fertilize) {
             painter->drawPixmap(-18, -18, 36, 36, QPixmap(good.address));
         }
+        painter->drawText(-18, 9, 36, 9, Qt::AlignCenter, QString::number(good.num));
     } else {
         if(good.type == Seed || good.type == Fruit) {
             painter->drawPixmap(-30, -45, 60, 60, QPixmap(QString("%1/seed.png").arg(good.address)));

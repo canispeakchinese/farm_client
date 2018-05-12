@@ -27,16 +27,27 @@ void Shop::moneyChange(int money)
     {
         if(i == Fruit)
             continue;
-        for(set<Good>::iterator it = goods[i].begin(); it!=goods[i].end();)
+        set<Good> newGoods;
+        for(set<Good>::iterator it = goods[i].begin(); it!=goods[i].end(); it++)
         {
             good = *it;
-            goods[i].erase(it);
             good.num = money/good.buyPrice;
-            goods[i].insert(good);
-            it++;
+            newGoods.insert(good);
         }
+        goods[i] = newGoods;
         goodgroup[good.type]->updateGoodItem(goods[good.type]);
     }
+}
+
+void Shop::receiveGoodChange(GoodChange::GoodChangeSource source) {
+    Q_UNUSED(source);
+    return;
+}
+
+int Shop::updateBusinessResult() {
+    MainView::setGood(businessGood);
+    emit goodChange(ShopSource, GoodChange::Get);
+    return -businessGood.buyPrice * businessGood.num;
 }
 
 Shop::~Shop()

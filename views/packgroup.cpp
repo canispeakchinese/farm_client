@@ -37,5 +37,39 @@ void PackGroup::goodChange(Business business, Good *good)
     goodgroup[good->type]->updateGoodItem(goods[good->type]);
 }
 
+void PackGroup::receiveGoodChange(GoodChange::GoodChangeSource source) {
+    Good good = MainView::getGood();
+    if(source == GoodChange::Update || good.type == Fruit) {
+        return;
+    }
+    bool find = false;
+    for(set<Good>::iterator it = goods[good.type].begin(); it != goods[good.type].end(); it++) {
+        if(it->kind == good.kind) {
+            Good newGood = *it;
+            goods[good.type].erase(it);
+            if(source == GoodChange::Get) {
+                newGood.num += good.num;
+                goods[good.type].insert(newGood);
+            } else if(source == GoodChange::Lose) {
+                if(good.num != 0) {
+                    goods[good.type].insert(good);
+                }
+            }
+            find = true;
+            break;
+        }
+    }
+    if(!find) {
+        /* TODO
+         * if(source == GoodChange::Lose) fix bug;
+         */
+        if(source == GoodChange::Get) {
+            goods[good.type].insert(good);
+        }
+    }
+    goodgroup[good.type]->updateGoodItem(goods[good.type]);
+    return;
+}
+
 PackGroup::~PackGroup() {
 }

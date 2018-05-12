@@ -21,6 +21,7 @@ Soil::Soil(int num) : num(num), mature(new QTimer()), water(new QTimer()),
 
 void Soil::updateInfor(QDataStream &in) {
     in >> level >> isRecla;
+    qDebug() << "Soil " << num << " level: " << level << ", recla info: " << isRecla;
     if(isRecla) {
         in >> kind;
         if(!kind) {
@@ -371,7 +372,8 @@ void SoilGroup::getPlantResult(QDataStream& in) {
         qDebug() << "Soil " << number << " Plant " << good.name << " Success";
         soil[number-1]->plantSuccess(good.kind, in);
         good.num--;
-        emit goodChange(SoilGroupSource);
+        MainView::setGood(good);
+        emit goodChange(SoilGroupSource, GoodChange::Lose);
         if(!good.num) {
             qDebug() << "SoilGroup Plant All Seed, Status Changed: " << MainView::getStatus() << " -> " << Empty;
             MainView::setStatus(Empty);
@@ -414,7 +416,7 @@ void SoilGroup::getHarvestResult(QDataStream &in)
         MainView::setUserInfo(userInfo);
         emit expChange(SoilGroupSource);
         MainView::setGood(createGood(Fruit, kind, num));
-        emit goodChange(SoilGroupSource);
+        emit goodChange(SoilGroupSource, GoodChange::Get);
     }
 }
 
@@ -469,7 +471,7 @@ void SoilGroup::getFertilizeResult(QDataStream &in)
         good.num--;
         qDebug() << "Soil " << number << " Fertilize Success, Redue Time " << reduTime;
         MainView::setGood(good);
-        emit goodChange(MainViewSource);
+        emit goodChange(MainViewSource, GoodChange::Lose);
         if(!good.num) {
             qDebug() << "SoilGroup Can Not Fertilize, Status Changed: " << MainView::getStatus() << " -> " << Empty;
             MainView::setStatus(Empty);

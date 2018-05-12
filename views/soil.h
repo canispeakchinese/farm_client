@@ -83,7 +83,7 @@ public:
 signals:
     void sendSoilRequestToServer(QByteArray);
 
-    void goodChange(QString source);
+    void goodChange(QString source, GoodChange::GoodChangeSource);
     void statusChange(QString source);
     void expChange(QString source);
     void moneyChange(QString source);

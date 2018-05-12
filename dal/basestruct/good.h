@@ -49,7 +49,7 @@ const Good goodDefin[111][111] = {
         Good(QString("empty"), QString("empty"), Seed, 0, 0, 0, 0),
         Good(QString("草莓"), QString("0"), Seed, 1, 10, 1, 20),
         Good(QString("玉米"), QString("1"), Seed, 2, 12, 1, 24),
-        Good(QString("白萝卜"), QString("2"), Seed, 3, 15, 1, 30),
+        Good(QString("白萝卜"), QString("2"), Seed, 3, 15, 7, 30),
         Good(QString("胡萝卜"), QString("3"), Seed, 4, 20, 2, 40),
         Good(QString("地瓜"), QString("4"), Seed, 5, 22, 2, 44),
         Good(QString("茄子"), QString("5"), Seed, 6, 25, 2, 50),

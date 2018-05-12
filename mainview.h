@@ -95,8 +95,7 @@ signals:
     void expChange(QString source);
     void sendExpChange();
 
-    void goodChange(QString source);
-    void sendGoodChange();
+    void sendGoodChange(GoodChange::GoodChangeSource);
 
     void sendUpdateRequest(QByteArray);
     void getSoils(QDataStream& in);
@@ -107,7 +106,7 @@ public slots:
     void statusChangeCenter(QString source);
     void moneyChangeCenter(QString source);
     void expChangeCenter(QString source);
-    void goodChangeCenter(QString source);
+    void goodChangeCenter(QString source, GoodChange::GoodChangeSource goodChangeSource);
 
     void logInSuccess(QDataStream& in);
     void getUpdateResult(QDataStream &in);

@@ -143,6 +143,7 @@ void MainView::createSceneGroup() {
     scene->addItem(showscenegroup);
     showscenegroup->createButton();
     showscenegroup->setPos(980,70);
+    showscenegroup->setParent(this);
     connect(this, SIGNAL(getGoods(QDataStream&,Business)), showscenegroup, SLOT(getGoods(QDataStream&,Business)));
 }
 
@@ -208,39 +209,47 @@ void MainView::statusChangeSignalConnect() {
 }
 
 void MainView::goodChangeSignalConnect() {
-    connect(soilgroup, SIGNAL(goodChange(QString)), this, SLOT(goodChangeCenter(QString)));
-    connect(this, SIGNAL(sendGoodChange()), packgroup, SLOT(receiveGoodChange()));
+    connect(soilgroup, SIGNAL(goodChange(QString, GoodChange::GoodChangeSource)), this, SLOT(goodChangeCenter(QString, GoodChange::GoodChangeSource)));
 
-    connect(packgroup, SIGNAL(goodChange(QString)), this, SLOT(goodChangeCenter(QString)));
-    connect(this, SIGNAL(sendGoodChange()), packgroup, SLOT(receiveGoodChange()));
+    connect(packgroup, SIGNAL(goodChange(QString,GoodChange::GoodChangeSource)), this, SLOT(goodChangeCenter(QString,GoodChange::GoodChangeSource)));
+    connect(this, SIGNAL(sendGoodChange(GoodChange::GoodChangeSource)), packgroup, SLOT(receiveGoodChange(GoodChange::GoodChangeSource)));
+
+    connect(showscenegroup, SIGNAL(goodChange(QString, GoodChange::GoodChangeSource)), this, SLOT(goodChangeCenter(QString,GoodChange::GoodChangeSource)));
+    connect(this, SIGNAL(sendGoodChange(GoodChange::GoodChangeSource)), showscenegroup, SLOT(receiveGoodChange(GoodChange::GoodChangeSource)));
 }
 
 void MainView::moneyChangeSignalConnect() {
     connect(soilgroup, SIGNAL(moneyChange(QString)), this, SLOT(moneyChangeCenter(QString)));
+    connect(showscenegroup, SIGNAL(moneyChange(QString)), this, SLOT(moneyChangeCenter(QString)));
 
     connect(this, SIGNAL(sendMoneyChange()), showinforgroup, SLOT(receiveUserInfoChange()));
+    connect(this, SIGNAL(sendMoneyChange()), showscenegroup, SLOT(receiveUserInfoChange()));
+    connect(this, SIGNAL(sendMoneyChange()), packgroup, SLOT(receiveUserInfoChange()));
 }
 
 void MainView::expChangeSignalConnect() {
     connect(soilgroup, SIGNAL(expChange(QString)), this, SLOT(expChangeCenter(QString)));
 
     connect(this, SIGNAL(sendExpChange()), showinforgroup, SLOT(receiveUserInfoChange()));
+    connect(this, SIGNAL(sendExpChange()), showscenegroup, SLOT(receiveUserInfoChange()));
+    connect(this, SIGNAL(sendExpChange()), packgroup, SLOT(receiveUserInfoChange()));
 }
 
 void MainView::networkMessageConnectSignalConnect() {
     connect(soilgroup, SIGNAL(sendSoilRequestToServer(QByteArray)), tcpClient, SLOT(sendRequest(QByteArray)));
-    connect(showscenegroup, SIGNAL(sendWarehouseRequestToServer(outBlock)), tcpClient, SLOT(sendRequest(QByteArray)));
+    connect(showscenegroup, SIGNAL(sendWarehouseRequestToServer(QByteArray)), tcpClient, SLOT(sendRequest(QByteArray)));
 
     connect(tcpClient, SIGNAL(getFertilizeResult(QDataStream&)), soilgroup, SLOT(getFertilizeResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getPlantResult(QDataStream&)), soilgroup, SLOT(getPlantResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getSpadResult(QDataStream&)), soilgroup, SLOT(getSpadResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getHarvestResult(QDataStream&)), soilgroup, SLOT(getHarvestResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getStatusChangeResult(QDataStream&)), soilgroup, SLOT(getStatusChangeResult(QDataStream&)));
+    connect(tcpClient, SIGNAL(getBusinessResult(QDataStream&)), showscenegroup, SLOT(getBusinessResult(QDataStream&)));
 }
 
-void MainView::goodChangeCenter(QString source) {
+void MainView::goodChangeCenter(QString source, GoodChange::GoodChangeSource goodChangeSource) {
     qDebug() << "Good Changed, Source: " << source;
-    emit sendGoodChange();
+    emit sendGoodChange(goodChangeSource);
 }
 
 void MainView::statusChangeCenter(QString source) {
@@ -254,6 +263,9 @@ void MainView::statusChangeCenter(QString source) {
     } else {
         if(toolType == Plant) {
             showstatus->setPixmap(QPixmap(QString("%1/seed.png").arg(good.address)));
+        } else if(toolType == Ferti) {
+            qDebug() << "fertilize address: " << good.address << ", kind: " << good.kind;
+            showstatus->setPixmap(QPixmap(QString("%1").arg(good.address)));
         } else {
             showstatus->setPixmap(QPixmap(QString(":icon/image/icon/topbutton(")+QString::number(toolType)+QString(").png")));
         }

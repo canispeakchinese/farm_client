@@ -18,18 +18,26 @@ public:
     explicit WareHouse(QString source, Business business, int column, int level, QWidget *parent = 0);
     void createScene(GoodType type);
     void business_failed();
+    virtual void receiveGoodChange(GoodChange::GoodChangeSource) = 0;
+    virtual int updateBusinessResult() = 0;
     ~WareHouse();
 
 signals:
-    void sendBusinessRequest(QByteArray);
+    void sendBusinessRequest(QByteArray, Business);
     void moneyChange(int money);
     void statusChange(QString source);
-    void goodChange(QString source);
+    void goodChange(QString source, GoodChange::GoodChangeSource);
 
 public slots:
     void getGoods(QDataStream &in, Business business);
     void getRequestFromGoodGroup(Good good);
     void levelChange(int _level);
+    void receiveUserInfoChange() {
+        UserInfo info = MainView::getUserInfo();
+        if(info.level != level) {
+            levelChange(info.level);
+        }
+    }
 
 protected:
     QString source;

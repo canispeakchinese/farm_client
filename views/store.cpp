@@ -20,41 +20,56 @@ Store::Store(int level, QWidget *parent) :
     tabwidget->setGeometry(70, 50, 460, 400);
 }
 
-void Store::goodChange(Business business, Good good)
-{
-    set<Good>::iterator it = goods[good.type].find(good);
-    if(it != goods[good.type].end())
-    {
-        if(business == Buy)
-            good.num += it->num;
-        goods[good.type].erase(it);
+void Store::receiveGoodChange(GoodChange::GoodChangeSource source) {
+    Good good = MainView::getGood();
+    qDebug() << "Store receive good, name: " << good.name << ", num: " << good.num << ", source: " << source;
+    if(source == GoodChange::Update) {
+        return;
     }
-    if(good.num)
-        goods[good.type].insert(good);
+    bool find = false;
+    for(set<Good>::iterator it = goods[good.type].begin(); it != goods[good.type].end(); it++) {
+        if(it->kind == good.kind) {
+            Good newGood = *it;
+            goods[good.type].erase(it);
+            if(source == GoodChange::Get) {
+                newGood.num += good.num;
+                goods[good.type].insert(newGood);
+            } else if(source == GoodChange::Lose) {
+                if(good.num != 0) {
+                    goods[good.type].insert(good);
+                }
+            }
+            find = true;
+            break;
+        }
+    }
+    if(!find) {
+        /* TODO
+         * if(source == GoodChange::Lose) fix bug;
+         */
+        if(source == GoodChange::Get) {
+            goods[good.type].insert(good);
+        }
+    }
     goodgroup[good.type]->updateGoodItem(goods[good.type]);
 }
 
-void Store::getBusinessResult(QDataStream &in) {
-    int messageType;
-    in >> messageType;
-    if(messageType == 0)
-        QMessageBox::warning(this, "交易失败", "交易数目不合法");
-    else if(messageType == 1)
-        QMessageBox::warning(this, "交易失败", "交易信息错误");
-    else if(messageType == 2)
-        QMessageBox::warning(this, "交易失败", "交易数目不合理");
-    else if(messageType == 3) {
-        if(business == Buy) {
-            emit moneyChange(-businessGood.buyPrice * businessGood.num);
-        } else if(business == Sell) {
-            if(businessGood.type == Seed || businessGood.type == Fertilize) {
-                emit moneyChange(businessGood.buyPrice * 0.8 * businessGood.num);
-            } else {
-                emit moneyChange(businessGood.sellPrice * businessGood.num);
-            }
-        }
-        emit goodChange(business, businessGood);
+int Store::updateBusinessResult() {
+    int moneyChange = 0;
+    if(businessGood.type == Seed || businessGood.type == Fertilize) {
+        moneyChange = businessGood.buyPrice * 0.8 * businessGood.num;
+    } else {
+        moneyChange = businessGood.sellPrice * businessGood.num;
     }
+    for(set<Good>::iterator it = goods[businessGood.type].begin(); it != goods[businessGood.type].end(); it++) {
+        if(it->kind == businessGood.kind) {
+            businessGood.num = it->num - businessGood.num;
+            MainView::setGood(businessGood);
+            break;
+        }
+    }
+    emit goodChange(StoreSource, GoodChange::Lose);
+    return moneyChange;
 }
 
 Store::~Store()

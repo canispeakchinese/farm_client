@@ -9,11 +9,9 @@ class Store : public WareHouse
     Q_OBJECT
 public:
     explicit Store(int level, QWidget *parent = 0);
+    virtual void receiveGoodChange(GoodChange::GoodChangeSource source);
+    virtual int updateBusinessResult();
     ~Store();
-
-public slots:
-    void goodChange(Business business, Good good);
-    void getBusinessResult(QDataStream& in);
 };
 
 #endif // STORE_H
