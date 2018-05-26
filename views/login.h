@@ -27,6 +27,7 @@ protected slots:
     void tryLogin();
     void trySign();
     void getLoginResult(QDataStream& in);
+    void getSignResult(QDataStream& in);
 
 private:
     QLabel * userName;

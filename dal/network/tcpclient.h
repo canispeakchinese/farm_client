@@ -16,6 +16,7 @@ public:
 
 signals:
     void getLoginResult(QDataStream&);
+    void getSignResult(QDataStream&);
     void getPlantResult(QDataStream&);
     void getBusinessResult(QDataStream&);
     void getHarvestResult(QDataStream&);

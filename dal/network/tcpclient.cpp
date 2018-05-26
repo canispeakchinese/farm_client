@@ -74,6 +74,9 @@ void TcpClient::readyRead() {
             case 1:
                 emit getLoginResult(in);
                 break;
+            case 2:
+                emit getSignResult(in);
+                break;
             case 3:
                 emit getUpdateResult(in);
                 break;

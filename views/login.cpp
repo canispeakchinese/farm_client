@@ -77,6 +77,22 @@ void Login::trySign()
     emit sendLoginRequest(outBlock);
 }
 
+void Login::getSignResult(QDataStream &in) {
+    int errno;
+    in >> errno;
+    qDebug() << "Sign errno is " << errno;
+    switch (errno) {
+    case 0:
+        emit logInSuccess(in);
+        this->close();
+        break;
+    case 1:
+        QMessageBox::warning(this, "注册失败", "用户名已存在，请重试");
+        break;
+    default:
+        break;
+    }
+}
 
 void Login::getLoginResult(QDataStream &in)
 {

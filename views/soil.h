@@ -99,10 +99,6 @@ protected slots:
     void getReclaResult(QDataStream &in);
     void getFertilizeResult(QDataStream &in);
 
-    void getRequestFromSoil(QByteArray outBlock) {
-        emit sendSoilRequestToServer(outBlock);
-    }
-
     void fertilizeEvent(int num);
 
 private:

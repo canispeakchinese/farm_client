@@ -47,6 +47,7 @@ MainView::MainView(QGraphicsView *parent) : QGraphicsView(parent), tcpClient(new
     connect(tcpClient, SIGNAL(connected()), login, SLOT(show()));
     connect(login, SIGNAL(sendLoginRequest(QByteArray)), tcpClient, SLOT(sendRequest(QByteArray)));
     connect(tcpClient, SIGNAL(getLoginResult(QDataStream&)), login, SLOT(getLoginResult(QDataStream&)));
+    connect(tcpClient, SIGNAL(getSignResult(QDataStream&)), login, SLOT(getSignResult(QDataStream&)));
     connect(login, SIGNAL(logInSuccess(QDataStream&)), this, SLOT(logInSuccess(QDataStream&)));
     // 获取某一个模块的最新数据（如土地状态等）
     connect(this, SIGNAL(sendUpdateRequest(QByteArray)), tcpClient, SLOT(sendRequest(QByteArray)));

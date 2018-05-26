@@ -285,10 +285,10 @@ void SoilGroup::createSoil() {
         for(int j=0;j<3;j++) {
             soil[i*3+j] = new Soil(i*3+j+1);
             connect(soil[i*3+j], SIGNAL(getFertilize(int)), this, SLOT(fertilizeEvent(int)));
-            connect(soil[i*3+j], SIGNAL(sendPlantRequest(QByteArray)), this, SLOT(getRequestFromSoil(QByteArray)));
-            connect(soil[i*3+j], SIGNAL(sendSpadRequest(QByteArray)), this, SLOT(getRequestFromSoil(QByteArray)));
-            connect(soil[i*3+j], SIGNAL(sendHarvestRequest(QByteArray)), this, SLOT(getRequestFromSoil(QByteArray)));
-            connect(soil[i*3+j], SIGNAL(sendStatusChangeRequest(QByteArray)), this, SLOT(getRequestFromSoil(QByteArray)));
+            connect(soil[i*3+j], SIGNAL(sendPlantRequest(QByteArray)), this, SIGNAL(sendSoilRequestToServer(QByteArray)));
+            connect(soil[i*3+j], SIGNAL(sendSpadRequest(QByteArray)), this, SIGNAL(sendSoilRequestToServer(QByteArray)));
+            connect(soil[i*3+j], SIGNAL(sendHarvestRequest(QByteArray)), this, SIGNAL(sendSoilRequestToServer(QByteArray)));
+            connect(soil[i*3+j], SIGNAL(sendStatusChangeRequest(QByteArray)), this, SIGNAL(sendSoilRequestToServer(QByteArray)));
             addToGroup(soil[i*3+j]);
             soil[i*3+j]->setPos(QPoint(90-90*j+x,40*j-40+y));
         }
