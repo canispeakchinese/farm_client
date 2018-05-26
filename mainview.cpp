@@ -245,6 +245,7 @@ void MainView::networkMessageConnectSignalConnect() {
     connect(tcpClient, SIGNAL(getSpadResult(QDataStream&)), soilgroup, SLOT(getSpadResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getHarvestResult(QDataStream&)), soilgroup, SLOT(getHarvestResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getStatusChangeResult(QDataStream&)), soilgroup, SLOT(getStatusChangeResult(QDataStream&)));
+    connect(tcpClient, SIGNAL(getReclaResult(QDataStream&)), soilgroup, SLOT(getReclaResult(QDataStream&)));
     connect(tcpClient, SIGNAL(getBusinessResult(QDataStream&)), showscenegroup, SLOT(getBusinessResult(QDataStream&)));
 }
 

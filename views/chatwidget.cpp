@@ -31,14 +31,16 @@ ChatWidget::ChatWidget(QString username, QString password) : tcpSocket(new QTcpS
     inBlock.clear();
     totalBytes = 0;
     retryNum = 3;
-}
 
-void ChatWidget::tryLogin()
-{
     tcpSocket->connectToHost(QHostAddress(ipAddress), 7777);
     if(tcpSocket->waitForConnected(1000) == false) {
         connectError();
     }
+}
+
+void ChatWidget::tryLogin()
+{
+    qDebug() << "chat server connect success, username: " << username << ", password: " << password;
     QByteArray outBlock;
     QDataStream out(&outBlock, QIODevice::ReadWrite);
     out.setVersion(QDataStream::Qt_5_5);
@@ -72,9 +74,6 @@ void ChatWidget::sendMessage()
 void ChatWidget::connected()
 {
     qDebug() << "Chat Client Connect Success, And Set Connect Retry Num to 3";
-    MainView::tcpMutex.lock();
-    retryNum = 3;
-    MainView::tcpMutex.unlock();
     tryLogin();
 }
 
@@ -86,13 +85,16 @@ void ChatWidget::connectError()
         MainView::tcpMutex.lock();
         retryNum--;
         MainView::tcpMutex.unlock();
-        QMessageBox::warning(this, "连接网络失败", tcpSocket->errorString());
-        tcpSocket->connectToHost(QHostAddress("192.168.199.183"), 7777);
+        QMessageBox::warning(this, "连接聊天服务器失败", tcpSocket->errorString());
+        tcpSocket->connectToHost(QHostAddress(ipAddress), 7777);
         if(tcpSocket->waitForConnected(1000) == false) {
             connectError();
         }
-    } else {
-        exit(-1);
+    } else if(retryNum == 0) {
+        MainView::tcpMutex.lock();
+        retryNum--;
+        MainView::tcpMutex.unlock();
+        QMessageBox::warning(this, "连接聊天服务器失败", "连接聊天服务器失败，聊天功能无法使用");
     }
 }
 
@@ -145,7 +147,6 @@ void ChatWidget::loginResultComing(QDataStream &in) {
     in >> result;
     if(!result) {
         QMessageBox::warning(NULL, "登录失败", "连接聊天服务器失败");
-        exit(0);
     }
     int count;
     in >> count;

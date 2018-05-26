@@ -3,7 +3,7 @@
 
 #include <QString>
 
-const QString ipAddress = "192.168.130.128";
+const QString ipAddress = "172.16.254.130";
 
 enum Business {
     Buy, Sell, Use//买,卖,使用

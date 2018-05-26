@@ -31,7 +31,7 @@ void TcpClient::connectError() {
         retryNum--;
         MainView::tcpMutex.unlock();
         QMessageBox::warning(parent, "连接网络失败", errorString());
-        connectToHost(QHostAddress("192.168.199.183"), 6666);
+        connectToHost(QHostAddress(ipAddress), 6666);
         if(waitForConnected(1000) == false) {
             connectError();
         }

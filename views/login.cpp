@@ -24,6 +24,7 @@ Login::Login(QWidget * parent) : QWidget(parent), userName(new QLabel(this)),
     inputName->setGeometry(270,120, 180, 30);
     passWord->setGeometry(50, 160, 180, 30);
     inputWord->setGeometry(270, 160, 180, 30);
+    inputWord->setEchoMode(QLineEdit::Password  );
     passWord->setText("密码");
     login->setGeometry(50, 200, 180, 30);
     login->setText("登录");
@@ -41,15 +42,15 @@ Login::~Login()
 
 void Login::tryLogin()
 {
-    QString userName = inputName->text();
-    QString passWord = inputWord->text();
+    MainView::username = inputName->text();
+    MainView::password = inputWord->text();
 
     QByteArray outBlock;
     QDataStream out(&outBlock, QIODevice::ReadWrite);
     out.setVersion(QDataStream::Qt_5_5);
     out << (qint64)(0);
     out << 1;//LogIn;
-    out << userName << passWord;
+    out << MainView::username << MainView::password;
     out.device()->seek(0);
     out << (qint64)outBlock.size();
     emit sendLoginRequest(outBlock);
